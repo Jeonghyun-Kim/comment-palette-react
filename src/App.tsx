@@ -168,14 +168,14 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
               onRefresh();
               break;
             case 401:
-              setAlert('비밀번호가 다릅니다.');
+              setAlert('비밀번호가 틀립니다.');
               break;
             default:
               setAlert('서버 에러 발생');
               break;
           }
         })
-        .catch(() => setAlert('네트워크 상태를 확인하세요.'));
+        .catch(() => setAlert('네트워크 연결 상태를 확인하세요.'));
     }
   };
 
@@ -261,14 +261,14 @@ const CommentEditor = ({ comment, setAlert, onRefresh }: {
               setAlert('입력을 확인하세요.');
               break;
             case 401:
-              setAlert('비밀번호가 다릅니다.');
+              setAlert('비밀번호가 틀립니다.');
               break;
             default:
               setAlert('서버 에러 발생');
               break;
           }
         })
-        .catch(() => setAlert('네트워크 상태를 확인하세요.'));
+        .catch(() => setAlert('네트워크 연결 상태를 확인하세요.'));
     }
   };
 
@@ -301,7 +301,7 @@ const CommentEditor = ({ comment, setAlert, onRefresh }: {
         </Grid>
         <TextField
           label="내용"
-          placeholder="아무 얘기나 적어주세요"
+          placeholder="감상평을 남겨주세요!"
           multiline
           fullWidth
           variant="standard"
@@ -347,7 +347,7 @@ export default function App() {
           setComments(json.comments);
         }
       })
-      .catch(() => setRes('인터넷 연결 상태를 확인하세요!'))
+      .catch(() => setRes('네트워크 연결 상태를 확인하세요!'))
       .finally(() => setLoading(false));
   };
 
@@ -371,7 +371,7 @@ export default function App() {
         .then((json) => {
           switch (json.error) {
             case 0:
-              setRes('성공적으로 등록되었습니다.');
+              setRes('이메일이 성공적으로 등록되었습니다.');
               setEmail('');
               setTimeout(() => setRes(''), 3000);
               break;
@@ -400,7 +400,7 @@ export default function App() {
         .then((json) => {
           switch (json.error) {
             case 0:
-              setRes('성공적으로 업로드되었습니다.');
+              setRes('성공적으로 업로드 되었습니다.');
               setTimeout(() => setRes(''), 3000);
               setName('');
               setPassword('');
@@ -415,7 +415,7 @@ export default function App() {
               break;
           }
         })
-        .catch(() => setRes('네트워크 상태를 확인하세요.'));
+        .catch(() => setRes('네트워크 연결 상태를 확인하세요.'));
     }
   };
 
@@ -504,7 +504,7 @@ export default function App() {
                 </Grid>
                 <TextField
                   label="내용"
-                  placeholder="아무 얘기나 적어주세요"
+                  placeholder="감상평을 남겨주세요!"
                   multiline
                   fullWidth
                   variant="standard"
