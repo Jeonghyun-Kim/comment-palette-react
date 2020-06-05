@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
       width: '24ch',
     },
     [theme.breakpoints.down('xs')]: {
-      width: '11ch',
+      width: '10ch',
       '&:focus': {
         width: '13ch',
       },
