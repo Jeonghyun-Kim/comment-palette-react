@@ -19,6 +19,7 @@ import {
 import MailIcon from '@material-ui/icons/MailOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import KeyIcon from '@material-ui/icons/VpnKeyOutlined';
 
 const SERVER_URL = 'http://api.airygall.com:8081';
 const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -78,6 +79,15 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  keyIcon: {
+    padding: theme.spacing(0, 2),
+    height: '80%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   inputRoot: {
     color: 'inherit',
   },
@@ -108,9 +118,17 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   heightAuto: {
     height: 'auto',
+    borderBottom: 'solid 1px #eee',
+  },
+  inputPassword: {
+    paddingLeft: `calc(1em + ${theme.spacing(5)}px)`,
   },
   disabled: {
     display: 'none',
+  },
+  topBottomMargin: {
+    marginTop: '2ch',
+    marginBottom: '2ch',
   },
   topMargin: {
     marginTop: '2ch',
@@ -205,12 +223,16 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
       <ListItem className={open === 'delete' ? classes.heightAuto : classes.disabled}>
         <Grid container>
           <Grid item xs>
+            <div className={classes.keyIcon}>
+              <KeyIcon />
+            </div>
             <InputBase
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="비밀번호"
               fullWidth
+              className={classes.inputPassword}
             />
           </Grid>
           <Grid item>
@@ -277,7 +299,7 @@ const CommentEditor = ({ comment, setAlert, onRefresh }: {
   };
 
   return (
-    <ListItem className={classes.topMargin}>
+    <ListItem className={classes.topBottomMargin}>
       <form className={classes.grow}>
         <Grid container className={classes.bottomMargin}>
           <Grid item xs={12} sm={4} md>
