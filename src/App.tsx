@@ -13,22 +13,32 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles';
 import MailIcon from '@material-ui/icons/MailOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 const SERVER_URL = 'http://localhost:8081';
 const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-interface Comment {
-  id: number;
+class Comment {
+  constructor(name: string, content: string) {
+    this.name = name;
+    this.content = content;
+  }
+
+  id?: number;
+
   name: string;
+
   content: string;
-  createdAt: Date;
-  updatedAt: Date;
+
+  createdAt?: Date;
+
+  updatedAt?: Date;
 }
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
-  root: {
+  grow: {
     flexGrow: 1,
   },
   title: {
@@ -77,49 +87,60 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     height: 'auto',
     transition: theme.transitions.create('height'),
   },
+  topMargin: {
+    marginTop: '2ch',
+  },
+  bottomMargin: {
+    marginBottom: '2ch',
+  },
 }));
 
-const Item = ({ comment, setAlert, onRefresh }: {
+const CommentItem = ({ comment, setAlert, onRefresh }: {
   comment: Comment,
   setAlert: React.Dispatch<React.SetStateAction<string>>,
   onRefresh: Function
 }) => {
-  const [onDelete, setOnDelete] = React.useState<boolean>(false);
+  const [isOpen, setOpen] = React.useState<boolean>(false);
   const [password, setPassword] = React.useState<string>('');
 
   const classes = useStyles();
 
   const toggleOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
-    setOnDelete(!onDelete);
+    setOpen(!isOpen);
   };
 
   const handleDelete = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
-    fetch(`${SERVER_URL}/comment`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id: comment.id, password }),
-    }).then((response) => response.json())
-      .then((json) => {
-        switch (json.error) {
-          case 0:
-            setAlert('성공적으로 삭제되었습니다.');
-            setTimeout(() => setAlert(''), 3000);
-            setOnDelete(false);
-            onRefresh();
-            break;
-          case 401:
-            setAlert('비밀번호가 다릅니다.');
-            break;
-          default:
-            setAlert('서버 에러 발생');
-            break;
-        }
-      })
-      .catch(() => setAlert('네트워크 상태를 확인하세요.'));
+    if (!password) {
+      setAlert('비밀번호를 입력해주세요.');
+      setTimeout(() => setAlert(''), 3000);
+    } else {
+      fetch(`${SERVER_URL}/comment`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id: comment.id, password }),
+      }).then((response) => response.json())
+        .then((json) => {
+          switch (json.error) {
+            case 0:
+              setAlert('성공적으로 삭제되었습니다.');
+              setTimeout(() => setAlert(''), 3000);
+              setOpen(false);
+              onRefresh();
+              break;
+            case 401:
+              setAlert('비밀번호가 다릅니다.');
+              break;
+            default:
+              setAlert('서버 에러 발생');
+              break;
+          }
+        })
+        .catch(() => setAlert('네트워크 상태를 확인하세요.'));
+    }
   };
 
   return (
@@ -130,12 +151,15 @@ const Item = ({ comment, setAlert, onRefresh }: {
           secondary={comment.createdAt}
         />
         <ListItemSecondaryAction>
+          <IconButton edge="end" aria-label="edit" onClick={toggleOpen}>
+            <EditIcon />
+          </IconButton>
           <IconButton edge="end" aria-label="delete" onClick={toggleOpen}>
             <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
-      {onDelete && (
+      {isOpen && (
         <ListItem className={classes.deleteSection}>
           <Grid container>
             <Grid item xs>
@@ -157,6 +181,105 @@ const Item = ({ comment, setAlert, onRefresh }: {
   );
 };
 
+const CommentEditor = ({ comment, setAlert, onRefresh }: {
+  comment: Comment,
+  setAlert: React.Dispatch<React.SetStateAction<string>>,
+  onRefresh: Function
+}) => {
+  const [name, setName] = React.useState<string>(comment.name);
+  const [password, setPassword] = React.useState<string>('');
+  const [content, setContent] = React.useState<string>(comment.content);
+
+  const classes = useStyles();
+
+  const handleUpload = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    if (!name || !content || !password) {
+      setAlert('모든 칸을 채워주세요!');
+      setTimeout(() => setAlert(''), 3000);
+    } else {
+      fetch(`${SERVER_URL}/comment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, password, content }),
+      }).then((response) => response.json())
+        .then((json) => {
+          switch (json.error) {
+            case 0:
+              setAlert('성공적으로 업로드되었습니다.');
+              setTimeout(() => setAlert(''), 3000);
+              setName('');
+              setPassword('');
+              setContent('');
+              onRefresh();
+              break;
+            case 400:
+              setAlert('입력을 확인하세요.');
+              break;
+            default:
+              setAlert('서버 에러 발생');
+              break;
+          }
+        })
+        .catch(() => setAlert('네트워크 상태를 확인하세요.'));
+    }
+  };
+
+  return (
+    <ListItem className={classes.topMargin}>
+      <form className={classes.grow}>
+        <Grid container className={classes.bottomMargin}>
+          <Grid item xs={12} sm={4} md>
+            <TextField
+              label="이름"
+              placeholder="홍길동"
+              variant="standard"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              fullWidth
+            />
+          </Grid>
+          <div className={classes.grow} />
+          <Grid item xs={12} sm={4} md>
+            <TextField
+              label="비밀번호"
+              placeholder="****"
+              type="password"
+              variant="standard"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              fullWidth
+            />
+          </Grid>
+        </Grid>
+        <TextField
+          label="내용"
+          placeholder="아무 얘기나 적어주세요"
+          multiline
+          fullWidth
+          variant="standard"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+        />
+        <Grid container className={classes.topMargin}>
+          <Grid item xs />
+          <Grid item>
+            <Button
+              variant="contained"
+              type="submit"
+              onClick={handleUpload}
+            >
+              등록
+            </Button>
+          </Grid>
+        </Grid>
+      </form>
+    </ListItem>
+  );
+};
+
 export default function App() {
   const [email, setEmail] = React.useState<string>('');
   const [res, setRes] = React.useState<string>('');
@@ -165,10 +288,31 @@ export default function App() {
   const [error, setError] = React.useState<string>('');
   const classes = useStyles();
 
+  const fetchData = () => {
+    setLoading(true);
+    fetch(`${SERVER_URL}/comments`, {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((json) => {
+        if (json.error) {
+          setError('Server Error');
+        } else {
+          setComments(json.comments);
+        }
+      })
+      .catch(() => setError('인터넷 연결 상태를 확인하세요!'))
+      .finally(() => setLoading(false));
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
+
   const handleSubmit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     if (!EMAIL_REGEX.test(email)) {
       setRes('올바른 이메일 주소를 입력하세요!');
+      setTimeout(() => setRes(''), 3000);
     } else {
       fetch(`${SERVER_URL}/subscription`, {
         method: 'POST',
@@ -193,28 +337,9 @@ export default function App() {
     }
   };
 
-  const fetchData = () => {
-    fetch(`${SERVER_URL}/comments`, {
-      method: 'GET',
-    }).then((response) => response.json())
-      .then((json) => {
-        if (json.error) {
-          setError('Server Error');
-        } else {
-          setComments(json.comments);
-        }
-      })
-      .catch(() => setError('인터넷 연결 상태를 확인하세요!'))
-      .finally(() => setLoading(false));
-  };
-
-  React.useEffect(() => {
-    fetchData();
-  }, []);
-
   return (
     <>
-      <div className={classes.root}>
+      <div className={classes.grow}>
         <AppBar position="static">
           <Toolbar>
             <Typography className={classes.title} variant="h6" noWrap>
@@ -259,9 +384,15 @@ export default function App() {
               <Typography>Loading...</Typography>
             ) : (
               comments.map((comment) => (
-                <Item comment={comment} setAlert={setRes} onRefresh={fetchData} key={comment.id} />
+                <CommentItem
+                  comment={comment}
+                  setAlert={setRes}
+                  onRefresh={fetchData}
+                  key={comment.id}
+                />
               ))
             )}
+            <CommentEditor comment={new Comment('', '')} setAlert={setRes} onRefresh={fetchData} />
           </List>
         </div>
       </Container>
