@@ -2,9 +2,12 @@ import React from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Container from '@material-ui/core/Container';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import InputBase from '@material-ui/core/InputBase';
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import TextField from '@material-ui/core/TextField';
+import InputBase from '@material-ui/core/InputBase';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -14,8 +17,6 @@ import { createStyles, fade, Theme, makeStyles } from '@material-ui/core/styles'
 import MailIcon from '@material-ui/icons/MailOutline';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 
 const SERVER_URL = 'http://localhost:8081';
 const EMAIL_REGEX = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -81,17 +82,26 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     backgroundColor: 'white',
   },
   commentList: {
-    backgroundColor: 'coral',
+    marginTop: '5ch',
   },
-  deleteSection: {
+  commentItem: {
+    borderBottom: 'solid 1px #eee',
+  },
+  heightAuto: {
     height: 'auto',
-    transition: theme.transitions.create('height'),
+  },
+  disabled: {
+    display: 'none',
   },
   topMargin: {
     marginTop: '2ch',
   },
   bottomMargin: {
     marginBottom: '2ch',
+  },
+  name: {
+    textAlign: 'right',
+    paddingRight: '5ch',
   },
 }));
 
@@ -150,10 +160,15 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
 
   return (
     <>
-      <ListItem>
+      <ListItem className={classes.commentItem}>
         <ListItemText
           primary={comment.content}
           secondary={comment.createdAt}
+        />
+        <div className={classes.grow} />
+        <ListItemText
+          secondary={comment.name}
+          className={classes.name}
         />
         <ListItemSecondaryAction>
           <IconButton edge="end" aria-label="edit" onClick={handleEditOpen}>
@@ -164,26 +179,25 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
-      {open === 'delete' ? (
-        <ListItem className={classes.deleteSection}>
-          <Grid container>
-            <Grid item xs>
-              <InputBase
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="비밀번호"
-                fullWidth
-              />
-            </Grid>
-            <Grid item>
-              <Button variant="contained" onClick={handleDelete}>삭제</Button>
-            </Grid>
+      <ListItem className={open === 'delete' ? classes.heightAuto : classes.disabled}>
+        <Grid container>
+          <Grid item xs>
+            <InputBase
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="비밀번호"
+              fullWidth
+            />
           </Grid>
-        </ListItem>
-      ) : open === 'edit' && (
+          <Grid item>
+            <Button variant="contained" onClick={handleDelete}>삭제</Button>
+          </Grid>
+        </Grid>
+      </ListItem>
+      <div className={open === 'edit' ? classes.heightAuto : classes.disabled}>
         <CommentEditor comment={comment} setAlert={setAlert} onRefresh={onRefresh} />
-      )}
+      </div>
     </>
   );
 };
@@ -424,7 +438,7 @@ export default function App() {
         <Typography>
           {res}
         </Typography>
-        <div className={classes.commentList}>
+        <Paper className={classes.commentList}>
           <List dense>
             {isLoading ? (
               <Typography>Loading...</Typography>
@@ -478,6 +492,7 @@ export default function App() {
                   <Grid item>
                     <Button
                       variant="contained"
+                      color="primary"
                       type="submit"
                       onClick={handleUpload}
                     >
@@ -488,7 +503,7 @@ export default function App() {
               </form>
             </ListItem>
           </List>
-        </div>
+        </Paper>
       </Container>
     </>
   );
