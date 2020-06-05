@@ -424,7 +424,7 @@ export default function App() {
       <div className={classes.grow}>
         <AppBar position="static">
           <Toolbar>
-            <Typography className={classes.title} variant="h4" noWrap>
+            <Typography className={classes.title} variant="h5" noWrap>
               Project Palette
             </Typography>
             <Typography className={classes.titleSmall} variant="h5" noWrap>
