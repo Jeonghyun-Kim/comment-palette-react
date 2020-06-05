@@ -44,7 +44,18 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   title: {
     flexGrow: 1,
+    padding: theme.spacing(1, 0, 1, 1),
     display: 'block',
+    [theme.breakpoints.down('xs')]: {
+      display: 'none',
+    },
+  },
+  titleSmall: {
+    flexGrow: 1,
+    display: 'block',
+    [theme.breakpoints.up('sm')]: {
+      display: 'none',
+    },
   },
   search: {
     position: 'relative',
@@ -76,6 +87,12 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     width: '16ch',
     '&:focus': {
       width: '24ch',
+    },
+    [theme.breakpoints.down('xs')]: {
+      width: '11ch',
+      '&:focus': {
+        width: '13ch',
+      },
     },
   },
   submit: {
@@ -403,8 +420,11 @@ export default function App() {
       <div className={classes.grow}>
         <AppBar position="static">
           <Toolbar>
-            <Typography className={classes.title} variant="h6" noWrap>
+            <Typography className={classes.title} variant="h4" noWrap>
               Project Palette
+            </Typography>
+            <Typography className={classes.titleSmall} variant="h5" noWrap>
+              Palette
             </Typography>
             <div className={classes.search}>
               <div className={classes.mailIcon}>
