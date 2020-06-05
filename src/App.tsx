@@ -120,6 +120,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     textAlign: 'right',
     paddingRight: '5ch',
   },
+  response: {
+    textAlign: 'center',
+  },
 }));
 
 const CommentItem = ({ comment, setAlert, onRefresh }: {
@@ -455,7 +458,7 @@ export default function App() {
         </AppBar>
       </div>
       <Container maxWidth="sm">
-        <Typography>
+        <Typography variant="h4" className={classes.response}>
           {res}
         </Typography>
         <Paper className={classes.commentList}>
