@@ -122,6 +122,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   response: {
     textAlign: 'center',
+    paddingTop: 30,
   },
 }));
 
@@ -458,7 +459,7 @@ export default function App() {
         </AppBar>
       </div>
       <Container maxWidth="sm">
-        <Typography variant="h4" className={classes.response}>
+        <Typography variant="h6" className={classes.response}>
           {res}
         </Typography>
         <Paper className={classes.commentList}>
