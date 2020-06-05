@@ -100,14 +100,19 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
   setAlert: React.Dispatch<React.SetStateAction<string>>,
   onRefresh: Function
 }) => {
-  const [isOpen, setOpen] = React.useState<boolean>(false);
+  const [open, setOpen] = React.useState<string>('closed');
   const [password, setPassword] = React.useState<string>('');
 
   const classes = useStyles();
 
-  const toggleOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleEditOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
-    setOpen(!isOpen);
+    setOpen(open === 'edit' ? 'closed' : 'edit');
+  };
+
+  const handleDeleteOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    setOpen(open === 'delete' ? 'closed' : 'delete');
   };
 
   const handleDelete = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -128,7 +133,7 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
             case 0:
               setAlert('성공적으로 삭제되었습니다.');
               setTimeout(() => setAlert(''), 3000);
-              setOpen(false);
+              setOpen('closed');
               onRefresh();
               break;
             case 401:
@@ -151,15 +156,15 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
           secondary={comment.createdAt}
         />
         <ListItemSecondaryAction>
-          <IconButton edge="end" aria-label="edit" onClick={toggleOpen}>
+          <IconButton edge="end" aria-label="edit" onClick={handleEditOpen}>
             <EditIcon />
           </IconButton>
-          <IconButton edge="end" aria-label="delete" onClick={toggleOpen}>
+          <IconButton edge="end" aria-label="delete" onClick={handleDeleteOpen}>
             <DeleteIcon />
           </IconButton>
         </ListItemSecondaryAction>
       </ListItem>
-      {isOpen && (
+      {open === 'delete' ? (
         <ListItem className={classes.deleteSection}>
           <Grid container>
             <Grid item xs>
@@ -176,6 +181,8 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
             </Grid>
           </Grid>
         </ListItem>
+      ) : open === 'edit' && (
+        <CommentEditor comment={comment} setAlert={setAlert} onRefresh={onRefresh} />
       )}
     </>
   );
@@ -192,23 +199,23 @@ const CommentEditor = ({ comment, setAlert, onRefresh }: {
 
   const classes = useStyles();
 
-  const handleUpload = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleEdit = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     if (!name || !content || !password) {
       setAlert('모든 칸을 채워주세요!');
       setTimeout(() => setAlert(''), 3000);
     } else {
       fetch(`${SERVER_URL}/comment`, {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, password, content }),
+        body: JSON.stringify({ id: comment.id, name, password, content }),
       }).then((response) => response.json())
         .then((json) => {
           switch (json.error) {
             case 0:
-              setAlert('성공적으로 업로드되었습니다.');
+              setAlert('성공적으로 업데이트 되었습니다.');
               setTimeout(() => setAlert(''), 3000);
               setName('');
               setPassword('');
@@ -217,6 +224,9 @@ const CommentEditor = ({ comment, setAlert, onRefresh }: {
               break;
             case 400:
               setAlert('입력을 확인하세요.');
+              break;
+            case 401:
+              setAlert('비밀번호가 다릅니다.');
               break;
             default:
               setAlert('서버 에러 발생');
@@ -269,9 +279,9 @@ const CommentEditor = ({ comment, setAlert, onRefresh }: {
             <Button
               variant="contained"
               type="submit"
-              onClick={handleUpload}
+              onClick={handleEdit}
             >
-              등록
+              수정
             </Button>
           </Grid>
         </Grid>
@@ -281,11 +291,13 @@ const CommentEditor = ({ comment, setAlert, onRefresh }: {
 };
 
 export default function App() {
+  const [name, setName] = React.useState<string>('');
+  const [password, setPassword] = React.useState<string>('');
+  const [content, setContent] = React.useState<string>('');
   const [email, setEmail] = React.useState<string>('');
   const [res, setRes] = React.useState<string>('');
   const [comments, setComments] = React.useState<Comment[]>([]);
   const [isLoading, setLoading] = React.useState<boolean>(true);
-  const [error, setError] = React.useState<string>('');
   const classes = useStyles();
 
   const fetchData = () => {
@@ -295,12 +307,12 @@ export default function App() {
     }).then((response) => response.json())
       .then((json) => {
         if (json.error) {
-          setError('Server Error');
+          setRes('Server Error');
         } else {
           setComments(json.comments);
         }
       })
-      .catch(() => setError('인터넷 연결 상태를 확인하세요!'))
+      .catch(() => setRes('인터넷 연결 상태를 확인하세요!'))
       .finally(() => setLoading(false));
   };
 
@@ -334,6 +346,41 @@ export default function App() {
           }
         })
         .catch(() => setRes('네트워크 연결 상태를 확인하세요.'));
+    }
+  };
+
+  const handleUpload = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    if (!name || !content || !password) {
+      setRes('모든 칸을 채워주세요!');
+      setTimeout(() => setRes(''), 3000);
+    } else {
+      fetch(`${SERVER_URL}/comment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, password, content }),
+      }).then((response) => response.json())
+        .then((json) => {
+          switch (json.error) {
+            case 0:
+              setRes('성공적으로 업로드되었습니다.');
+              setTimeout(() => setRes(''), 3000);
+              setName('');
+              setPassword('');
+              setContent('');
+              fetchData();
+              break;
+            case 400:
+              setRes('입력을 확인하세요.');
+              break;
+            default:
+              setRes('서버 에러 발생');
+              break;
+          }
+        })
+        .catch(() => setRes('네트워크 상태를 확인하세요.'));
     }
   };
 
@@ -378,7 +425,6 @@ export default function App() {
           {res}
         </Typography>
         <div className={classes.commentList}>
-          <Typography>{error}</Typography>
           <List dense>
             {isLoading ? (
               <Typography>Loading...</Typography>
@@ -392,7 +438,55 @@ export default function App() {
                 />
               ))
             )}
-            <CommentEditor comment={new Comment('', '')} setAlert={setRes} onRefresh={fetchData} />
+            <ListItem className={classes.topMargin}>
+              <form className={classes.grow}>
+                <Grid container className={classes.bottomMargin}>
+                  <Grid item xs={12} sm={4} md>
+                    <TextField
+                      label="이름"
+                      placeholder="홍길동"
+                      variant="standard"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      fullWidth
+                    />
+                  </Grid>
+                  <div className={classes.grow} />
+                  <Grid item xs={12} sm={4} md>
+                    <TextField
+                      label="비밀번호"
+                      placeholder="****"
+                      type="password"
+                      variant="standard"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      fullWidth
+                    />
+                  </Grid>
+                </Grid>
+                <TextField
+                  label="내용"
+                  placeholder="아무 얘기나 적어주세요"
+                  multiline
+                  fullWidth
+                  variant="standard"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                />
+                <Grid container className={classes.topMargin}>
+                  <Grid item xs />
+                  <Grid item>
+                    <Button
+                      variant="contained"
+                      type="submit"
+                      onClick={handleUpload}
+                    >
+                      등록
+                    </Button>
+                  </Grid>
+                </Grid>
+              </form>
+            </ListItem>
           </List>
         </div>
       </Container>
