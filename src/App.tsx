@@ -208,7 +208,7 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
             />
           </Grid>
           <Grid item>
-            <Button variant="contained" onClick={handleDelete}>삭제</Button>
+            <Button variant="contained" color="secondary" onClick={handleDelete}>삭제</Button>
           </Grid>
         </Grid>
       </ListItem>
