@@ -136,6 +136,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   name: {
     textAlign: 'center',
+    marginTop: '10px',
+    fontWeight: 'bold',
+    fontSize: '17px',
   },
   content: {
     paddingRight: '0',
