@@ -135,9 +135,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     marginBottom: '2ch',
   },
   name: {
-    textAlign: 'right',
-    float: 'right',
-    margin: '0 auto',
+    textAlign: 'center',
   },
   content: {
     paddingRight: '0',
