@@ -11,8 +11,6 @@ import InputBase from '@material-ui/core/InputBase';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import {
   createStyles, fade, Theme, makeStyles,
 } from '@material-ui/core/styles';
@@ -138,11 +136,15 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
   },
   name: {
     textAlign: 'right',
-    paddingRight: '5ch',
+    float: 'right',
+    margin: '0 auto',
   },
   response: {
     textAlign: 'center',
     paddingTop: 30,
+  },
+  content: {
+    paddingRight: '0',
   },
 }));
 
@@ -202,23 +204,33 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
   return (
     <>
       <ListItem className={classes.commentItem}>
-        <ListItemText
-          primary={comment.content}
-          secondary={comment.createdAt}
-        />
-        <div className={classes.grow} />
-        <ListItemText
-          secondary={comment.name}
-          className={classes.name}
-        />
-        <ListItemSecondaryAction>
-          <IconButton edge="end" aria-label="edit" onClick={handleEditOpen}>
-            <EditIcon />
-          </IconButton>
-          <IconButton edge="end" aria-label="delete" onClick={handleDeleteOpen}>
-            <DeleteIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
+        <Grid container spacing={1}>
+          <Grid item container direction="column" justify="space-between" xs={10}>
+            <Grid item>
+              <Typography variant="subtitle1">{comment.content}</Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="caption">{comment.createdAt}</Typography>
+            </Grid>
+          </Grid>
+          <Grid item container xs={2} direction="column" justify="space-between">
+            <Grid item>
+              <Typography variant="subtitle2" className={classes.name}>{comment.name}</Typography>
+            </Grid>
+            <Grid item container>
+              <Grid item xs={6}>
+                <IconButton edge="end" aria-label="edit" onClick={handleEditOpen}>
+                  <EditIcon />
+                </IconButton>
+              </Grid>
+              <Grid item xs={6}>
+                <IconButton edge="end" aria-label="delete" onClick={handleDeleteOpen}>
+                  <DeleteIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
       </ListItem>
       <ListItem className={open === 'delete' ? classes.heightAuto : classes.disabled}>
         <Grid container>
@@ -414,6 +426,9 @@ export default function App() {
     event.preventDefault();
     if (!name || !content || !password) {
       setRes('모든 칸을 채워주세요!');
+      setTimeout(() => setRes(''), 3000);
+    } else if (name.length >= 20) {
+      setRes('이름은 20자를 넘을 수 없습니다.');
       setTimeout(() => setRes(''), 3000);
     } else {
       fetch(`${SERVER_URL}/comment`, {
