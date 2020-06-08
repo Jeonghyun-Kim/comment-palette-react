@@ -155,6 +155,9 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     padding: '10px auto',
     width: '100%',
   },
+  contentBox: {
+    padding: '15px 8px 15px 8px !important',
+  },
 }));
 
 const CommentItem = ({ comment, setAlert, onRefresh }: {
@@ -214,7 +217,7 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
     <>
       <ListItem className={classes.commentItem}>
         <Grid container spacing={1}>
-          <Grid item container direction="column" justify="space-between" xs={10}>
+          <Grid item container direction="column" justify="space-between" xs={10} className={classes.contentBox}>
             <Grid item>
               <Typography variant="subtitle1">{comment.content}</Typography>
             </Grid>
