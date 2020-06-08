@@ -40,6 +40,10 @@ class Comment {
 }
 
 const useStyles = makeStyles((theme: Theme) => createStyles({
+  root: {
+    flexGrow: 1,
+    marginBottom: 20,
+  },
   grow: {
     flexGrow: 1,
   },
@@ -467,7 +471,7 @@ export default function App() {
 
   return (
     <>
-      <div className={classes.grow}>
+      <div className={classes.root}>
         <AppBar position="static">
           <Toolbar>
             <Typography className={classes.title} variant="h5" noWrap>
