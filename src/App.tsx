@@ -139,12 +139,12 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     float: 'right',
     margin: '0 auto',
   },
-  response: {
-    textAlign: 'center',
-    paddingTop: 30,
-  },
   content: {
     paddingRight: '0',
+  },
+  resPaper: {
+    marginTop: '20px',
+    padding: '10px 0',
   },
 }));
 
@@ -500,9 +500,13 @@ export default function App() {
         </AppBar>
       </div>
       <Container maxWidth="sm">
-        <Typography variant="h6" className={classes.response}>
-          {res}
-        </Typography>
+        {res && (
+        <Paper className={classes.resPaper}>
+          <Typography variant="h6" align="center">
+            {res}
+          </Typography>
+        </Paper>
+        )}
         <Paper className={classes.commentList}>
           <List dense>
             {isLoading ? (
