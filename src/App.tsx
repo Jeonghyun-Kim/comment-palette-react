@@ -508,7 +508,7 @@ export default function App() {
           </Toolbar>
         </AppBar>
       </div>
-      <Container maxWidth="sm">
+      <Container maxWidth="md">
         {res && (
         <Paper className={classes.resPaper}>
           <Typography variant="h6" align="center">
