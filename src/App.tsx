@@ -145,8 +145,7 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     padding: '10px 0',
   },
   icon: {
-    padding: 0,
-    margin: '10px auto',
+    padding: '10px auto',
     width: '100%',
   },
 }));
