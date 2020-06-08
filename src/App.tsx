@@ -144,16 +144,10 @@ const useStyles = makeStyles((theme: Theme) => createStyles({
     marginTop: '20px',
     padding: '10px 0',
   },
-  iconLeft: {
+  icon: {
     padding: 0,
-    marginTop: 10,
-    maringRight: 10,
-    marginBottom: 10,
-    margin: '10px 10px 10px 0',
-  },
-  iconRight: {
-    padding: 0,
-    margin: 10,
+    margin: '10px auto',
+    width: '100%',
   },
 }));
 
@@ -228,12 +222,12 @@ const CommentItem = ({ comment, setAlert, onRefresh }: {
             </Grid>
             <Grid item container>
               <Grid item xs={6}>
-                <IconButton edge="end" aria-label="edit" className={classes.iconLeft} onClick={handleEditOpen}>
+                <IconButton edge="end" aria-label="edit" className={classes.icon} onClick={handleEditOpen}>
                   <EditIcon />
                 </IconButton>
               </Grid>
               <Grid item xs={6}>
-                <IconButton edge="end" aria-label="delete" className={classes.iconRight} onClick={handleDeleteOpen}>
+                <IconButton edge="end" aria-label="delete" className={classes.icon} onClick={handleDeleteOpen}>
                   <DeleteIcon />
                 </IconButton>
               </Grid>
